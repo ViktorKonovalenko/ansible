@@ -1,0 +1,13 @@
+---
+- name: 'Установка rsync'
+  hosts: "{{ bd_restore }}"
+  become: yes
+  tasks: 
+    - name: 'Ставим пакет'
+      apt:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - python-psycopg2
+        - rsync
+

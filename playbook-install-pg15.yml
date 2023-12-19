@@ -1,0 +1,26 @@
+-
+  name: 'Установка postgresql-15'
+  hosts: pg-sql-astra
+  become: yes
+  vars: 
+    dest_dir: /home
+    libs: /files/libs14
+    pg_version: /files/postgresql-14.8-1.1C_amd64_deb
+  tasks:
+    - name: 'Копирование архивов на удаленный сервер'
+      copy:
+        src: /ansible{{ libs }}
+        dest: "{{ dest_dir }}"
+        mode: 777
+    - name: 'Копирование postgresql на сервер' 
+      copy:
+        src: /ansible{{ pg_version }}
+        dest: "{{ dest_dir }}"
+        mode: 777
+    - name: Установка зависимостей 
+      shell: 
+        cmd: cd {{ dest_dir }}{{ libs }} && apt install ./* -y
+    - name: Установка postgresql
+      shell: 
+        cmd: cd {{ dest_dir }}{{ pg_version }} && apt install ./* -y
+

@@ -1,0 +1,25 @@
+-
+  name: 'Бэкап и восстановление баз postgres'
+  hosts: "{{ bd_backup }}"
+  become: yes
+  tasks:
+    - name: 'Установка python-psycopg2'
+      apt: 
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - python-psycopg2
+        - rsync
+    - name: 'Запуск бэкапа'
+      become_user: postgres
+      postgresql_db:
+        name: "{{ database }}"
+        state: dump
+        target: /var/lib/postgresql/14/main/{{ new_bd }}.bak
+    - name: 'Копирование на контроллер ansible'
+      shell:
+        cmd: scp -P 9753 /var/lib/postgresql/14/main/{{ new_bd }}.bak 172.17.59.45:/var/lib/postgresql/14/main/
+    - name: 'Удаление бэкапа'
+      shell:
+        cmd: rm -rf /var/lib/postgresql/14/main/{{ new_bd }}.bak
+

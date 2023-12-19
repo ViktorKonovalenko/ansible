@@ -1,0 +1,11 @@
+-
+  name: 'Установка и настройка pgbackrest'
+  hosts: pg-itil-test
+  become: yes
+  tasks:
+    - name: 'Запуск скрипта установки на centos'
+      script: /ansible/scripts/install-pgbackrest-centos.sh
+      when: ansible_os_family == "RHEL"
+    - name: 'Запуск скрипта установки на debian и astra'
+      script: /ansible/scripts/install-pgbackrest-astra.sh    
+      when: (ansible_os_family == "Astra Linux") or (ansible_os_family == "Debian")

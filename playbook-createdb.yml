@@ -1,0 +1,21 @@
+---
+- import_playbook: playbook-install-rsync.yml
+- import_playbook: playbook-pgdump.yml
+- name: 'Запуск и восстановление бэкапа'
+  hosts: "{{ bd_restore }}"
+  become: yes
+  tasks:
+    - name: 'Создание базы данных'
+      become_user: postgres
+      postgresql_db:
+        name: "{{ new_bd }}"
+    - name: 'Восстановление бэкапа'
+      become_user: postgres
+      postgresql_db:
+        name: "{{ new_bd }}"
+        state: restore
+        target: /var/lib/postgresql/14/main/{{ new_bd }}.bak
+    - name: 'Удаление бэкапа'
+      shell:
+        cmd: rm -rf /var/lib/postgresql/14/main/{{ new_bd }}.bak
+

@@ -1,0 +1,26 @@
+---
+- name: 'Установка Apache2'
+  hosts: web-gubernya
+  become: yes
+  tasks: 
+    - name: 'update'
+      shell: 
+       cmd: apt update -y
+    - name: 'Установка пакета Apache2'
+      apt: 
+        name: apache2
+        state: latest
+    - name: 'Отключаем astra mode'
+      replace: 
+        path: "/etc/apache2/apache2.conf"
+        regexp: '^# AstraMode on$'
+        replace: 'AstraMode off'
+    - name: 'Запуск apache2'
+      systemd:
+        name: apache2
+        state: started
+        enabled: yes
+    - name: 'Перезагрузка apache2'
+      systemd:
+        name: apache2
+        state: restarted
